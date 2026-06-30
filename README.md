@@ -36,7 +36,7 @@ user_friends.dat
 Your folder structure should look like this:
 
 ```
-music-recommendation-system/
+hybrid-recommendation-system/
     music_recommender.ipynb
     README.md
     data/
@@ -83,7 +83,7 @@ Both CF methods include explanation functions that show *why* a recommendation w
 ## Project Structure
 
 ```
-music-recommendation-system/
+hybrid-recommendation-system/
     music_recommender.ipynb   # Main notebook (run top to bottom)
     README.md
     data/                     # Download separately — see Dataset section above
