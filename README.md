@@ -36,8 +36,8 @@ user_friends.dat
 Your folder structure should look like this:
 
 ```
-hybrid-recommendation-system/
-    music_recommender.ipynb
+hybrid-recommender-system/
+    hybrid_recommender_complete.py
     README.md
     data/
         artists.dat
@@ -72,6 +72,10 @@ Builds an **artist-tag matrix** from crowd-sourced Last.fm tags (e.g. "alternati
 
 Predictions are evaluated on a 25% held-out test set using **MAE** and **RMSE** on predicted play counts.
 
+![Prediction error by method](evaluation_comparison.png)
+
+Item-based CF outperforms user-based CF on both metrics, suggesting artist-artist similarity is a more stable signal than user-user similarity for this dataset.
+
 ### Explainability
 
 Both CF methods include explanation functions that show *why* a recommendation was made:
@@ -83,10 +87,10 @@ Both CF methods include explanation functions that show *why* a recommendation w
 ## Project Structure
 
 ```
-hybrid-recommendation-system/
-    music_recommender.ipynb   # Main notebook (run top to bottom)
+hybrid-recommender-system/
+    hybrid_recommender_complete.py   # Main script (run top to bottom)
     README.md
-    data/                     # Download separately — see Dataset section above
+    data/                             # Download separately — see Dataset section above
 ```
 
 ---
@@ -110,30 +114,29 @@ pip install pandas numpy scikit-learn matplotlib seaborn
 
 ---
 
-## Running the Notebook
+## Running the Script
 
 ```bash
-jupyter notebook music_recommender.ipynb
+python hybrid_recommender_complete.py
 ```
 
-Or open in VS Code with the Jupyter extension. No Google account required — all paths are local.
+Or open in VS Code and run directly. No Google account required — all paths are local.
 
-> **Note:** At least 8GB RAM is recommended to run the notebook end-to-end due to the size of the user-item similarity matrices (~1,900 × 17,600 floats). On machines with less RAM, add the following filter immediately after the deduplication step to reduce the dataset to popular artists only:
-> 
-> ```python
-> min_users = 20  # increase to 50 if memory issues persist
-> popular_artists = df_interactions_clean.groupby('artistID')['userID'].nunique()
-> popular_artist_ids = popular_artists[popular_artists >= min_users].index
-> df_interactions_clean = df_interactions_clean[df_interactions_clean['artistID'].isin(popular_artist_ids)]
-> ```
+> **Note on performance:** the script filters to artists with at least 20 listeners early on, which keeps the similarity matrices manageable even on lower-RAM machines (tested working on 4GB RAM). If you still hit memory issues, increase `min_users` (e.g. to 50) to shrink the matrices further.
 
 ---
 
 ## Key Results
 
-- Cosine similarity successfully clusters artists by genre (e.g. Metallica → Slayer, Megadeth; Radiohead → Thom Yorke, Portishead)
-- Tag-based similarity produces genre-coherent playlists even for niche artists with limited play-count data
+- Cosine similarity successfully clusters artists by genre (e.g. Metallica → Machine Head, Kreator; Radiohead → Thom Yorke, Pixies)
+- Tag-based similarity produces genre-coherent playlists even for niche artists with limited play-count data (e.g. Metallica → Megadeth, Anthrax)
 - Cold-start users (no listening history) cannot be served by CF; content-based filtering provides a fallback
+
+### Artist Similarity Map
+
+A 2D projection (PCA + t-SNE) of the top 300 most-tagged artists based on their tag similarity. Artists with similar genres cluster together — metal artists (Metallica, Megadeth) group distinctly from pop artists (Britney Spears, Madonna) and indie/alternative artists (Radiohead, Coldplay).
+
+![Artist similarity map](artist_similarity_map.png)
 
 ---
 
